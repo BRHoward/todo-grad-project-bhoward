@@ -65,5 +65,17 @@ testing.describe("end to end", function() {
             });
         });
     });
+    testing.describe("on deleting todo item", function() {
+        testing.it("removes the todo from the list", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("New todo item");
+            helpers.getDeleteButton(0).then(function(button) {
+                button.click();
+                helpers.getTodoList().then(function(elements) {
+                    assert.equal(elements.length, 0);
+                });
+            });
+        });
+    });
 });
 

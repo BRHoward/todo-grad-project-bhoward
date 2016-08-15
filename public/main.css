@@ -23,3 +23,9 @@ h1 {
     line-height: 34px;
     color: rgba(255, 255, 255, 0.87);
 }
+
+.del-btn {
+    background-color: #000000;
+    color:#ff3333;
+    font-weight:bold;
+}
