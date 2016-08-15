@@ -72,7 +72,16 @@ function reloadTodoList() {
                 removeTodo(todo.id, reloadTodoList);
             };
             delBtn.innerHTML = "Delete";
+            var updBtn = document.createElement("button");
+            updBtn.className = "upd-btn";
+            updBtn.id = "upd-btn" + todo.id;
+            updBtn.onclick = function() {
+                //update the todo and reload the list
+                updateTodo();
+            };
+            updBtn.innerHTML = "Update";
             listItem.appendChild(delBtn);
+            listItem.appendChild(updBtn);
             todoList.appendChild(listItem);
         });
     });
