@@ -69,13 +69,10 @@ testing.describe("end to end", function() {
         testing.it("removes the todo from the list", function() {
             helpers.navigateToSite();
             helpers.addTodo("New todo item");
-            helpers.getDeleteButton(0).then(function(button) {
-                button.click();
-                helpers.getTodoList().then(function(elements) {
-                    assert.equal(elements.length, 0);
-                });
+            helpers.removeTodo(0);
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 0);
             });
         });
     });
 });
-
