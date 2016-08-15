@@ -90,14 +90,6 @@ module.exports.removeTodo = function(id) {
     });
 };
 
-module.exports.getDeleteButton = function(id) {
-    return driver.findElement(webdriver.By.id("del-btn" + id));
-};
-
-// module.exports.wait = function(time, func) {
-//     setTimeout(func, time);
-// };
-
 module.exports.setupErrorRoute = function(action, route) {
     if (action === "get") {
         router.get(route, function(req, res) {
