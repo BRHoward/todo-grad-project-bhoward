@@ -37,7 +37,7 @@ module.exports.teardownServer = function(done) {
 
 module.exports.teardownDriver = function() {
     if (gatheringCoverage) {
-        driver.executeScript("return __coverage__;").then(function (coverage) {
+        driver.executeScript("return __coverage__;").then(function(coverage) {
             collector.add(coverage);
         });
     }
@@ -80,14 +80,15 @@ module.exports.addTodo = function(text) {
 };
 
 module.exports.removeTodo = function(id) {
-    driver.findElement(webdriver.By.id("del-btn" + id)).click();
-};
+    //waiting for the delete button to appear before trying to click it
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("del-btn" + id));
+    }, 1000);
 
-// module.exports.removeTodo = function(id) {
-//     driver.findElements(webdriver.By.className("del-btn")).then(function(elements) {
-//         elements[id].click();
-//     });
-// };
+    driver.findElement(webdriver.By.id("del-btn" + id)).then(function(button) {
+        button.click();
+    });
+};
 
 module.exports.getDeleteButton = function(id) {
     return driver.findElement(webdriver.By.id("del-btn" + id));
