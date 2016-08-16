@@ -42,12 +42,13 @@ function removeTodo(id, callback) {
     createRequest.send();
 }
 
-function updateTodo(id, newText, callback) {
+function updateTodo(id, newText, completeState, callback) {
     var createRequest = new XMLHttpRequest();
     createRequest.open("PUT", "/api/todo/" + id);
     createRequest.setRequestHeader("Content-type", "application/json");
     createRequest.send(JSON.stringify({
-        title: newText
+        title: newText,
+        completeState: completeState
     }));
     createRequest.onload = function() {
         if (this.status === 200) {
@@ -104,7 +105,6 @@ function generateTodoListElement(todo) {
     updBtn.innerHTML = "Update";
     updBtn.onclick = function() {
         //create input field for updating the todo
-        updBtn.style.display = "none";
         var updForm = document.createElement("form");
         var updInput = document.createElement("input");
         updInput.id = "upd-input" + todo.id;
@@ -118,11 +118,24 @@ function generateTodoListElement(todo) {
         updInput.setAttribute("value", todo.title);
         todoText.parentNode.replaceChild(updForm, todoText);
         updForm.onsubmit = function() {
-            updateTodo(todo.id, updInput.value, reloadTodoList);
+            updateTodo(todo.id, updInput.value, todo.isComplete, reloadTodoList);
         };
     };
-    listItem.appendChild(delBtn);
+    var completedBtn = document.createElement("button");
+    completedBtn.innerHTML = "Done";
+    completedBtn.className = "completed-btn";
+    if(todo.isComplete){
+        todoText.classList.add("todo-complete")
+    } else if(todoText.classList.contains("todo-complete")) {
+        todoText.classList.remove("todo-complete");
+    }
+    completedBtn.id = "completed-btn" + todo.id;
+    completedBtn.onclick = function() {
+        updateTodo(todo.id, todoText.textContent, !todo.isComplete, reloadTodoList);
+    };
+    listItem.appendChild(completedBtn);
     listItem.appendChild(updBtn);
+    listItem.appendChild(delBtn);
     return listItem;
 }
 

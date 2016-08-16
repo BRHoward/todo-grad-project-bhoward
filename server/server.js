@@ -18,6 +18,7 @@ module.exports = function(port, middleware, callback) {
     app.post("/api/todo", function(req, res) {
         var todo = req.body;
         todo.id = latestId.toString();
+        todo.isComplete = false;
         latestId++;
         todos.push(todo);
         res.set("Location", "/api/todo/" + todo.id);
@@ -26,6 +27,7 @@ module.exports = function(port, middleware, callback) {
 
     // Read
     app.get("/api/todo", function(req, res) {
+        console.log(todos);
         res.json(todos);
     });
 
@@ -49,6 +51,7 @@ module.exports = function(port, middleware, callback) {
         var todo = getTodo(id);
         if (todo) {
             todo.title = newText;
+            todo.isComplete = req.body.completeState;
             res.sendStatus(200);
         } else {
             res.sendStatus(404);

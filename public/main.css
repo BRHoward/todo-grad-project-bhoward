@@ -29,3 +29,8 @@ h1 {
     color:#ff3333;
     font-weight:bold;
 }
+
+.todo-complete {
+    color:green;
+    font-weight:bold;
+}
