@@ -131,10 +131,9 @@ testing.describe("end to end", function() {
             helpers.addTodo("2nd todo");
             helpers.addTodo("3rd todo");
             helpers.toggleTodoComplete(1);
-            helpers.toggleTodoComplete(2);
             helpers.deleteCompletedTodos();
             helpers.getTodoList().then(function(elements) {
-                assert.equal(elements.length, 1);
+                assert.equal(elements.length, 2);
             });
         });
     });
