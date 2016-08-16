@@ -26,15 +26,6 @@ deleteCompletedBtn.onclick = function() {
     });
 };
 
-function removeAllCompleteTodos(callback) {
-
-    getTodoList(function(todos) {
-        for (var i = 0; i < todos.length - 1; i++) {
-            removeTodo(todos[i].id, removeTodo[i]);
-        }
-    });
-}
-
 function createTodo(title, callback) {
     var createRequest = new XMLHttpRequest();
     createRequest.open("POST", "/api/todo");
