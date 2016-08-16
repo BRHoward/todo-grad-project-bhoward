@@ -75,4 +75,14 @@ testing.describe("end to end", function() {
             });
         });
     });
+    testing.describe("on updating todo item", function() {
+        testing.it("shows the new text", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("new todo item");
+            helpers.updateTodo(0, " - now updated");
+            helpers.getTodoText(0).then(function(text) {
+                assert.equal(text, "new todo item - now updated");
+            });
+        });
+    });
 });
