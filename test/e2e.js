@@ -113,4 +113,29 @@ testing.describe("end to end", function() {
             });
         });
     });
+    testing.describe("when deleting all completed todos", function() {
+        testing.it("should updated complete counter", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("1st todo");
+            helpers.addTodo("2nd todo");
+            helpers.addTodo("3rd todo");
+            helpers.toggleTodoComplete(1);
+            helpers.deleteCompletedTodos();
+            helpers.getCompleteCounterText().then(function(counterText) {
+                assert.equal(counterText, "0/2 complete");
+            });
+        });
+        testing.it("should update todo list", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("1st todo");
+            helpers.addTodo("2nd todo");
+            helpers.addTodo("3rd todo");
+            helpers.toggleTodoComplete(1);
+            helpers.toggleTodoComplete(2);
+            helpers.deleteCompletedTodos();
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 1);
+            });
+        });
+    });
 });

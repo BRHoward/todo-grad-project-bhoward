@@ -4,6 +4,7 @@ var form = document.getElementById("todo-form");
 var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
 var completeCounter = document.getElementById("count-label");
+var deleteCompletedBtn = document.getElementById("delete-complete-btn");
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -13,6 +14,26 @@ form.onsubmit = function(event) {
     todoTitle.value = "";
     event.preventDefault();
 };
+
+//when clicked all the currently completed todos are deleted
+deleteCompletedBtn.onclick = function() {
+    getTodoList(function(todos) {
+        todos.forEach(function(todo) {
+            if (todo.isComplete) {
+                removeTodo(todo.id, reloadTodoList);
+            }
+        });
+    });
+};
+
+function removeAllCompleteTodos(callback) {
+
+    getTodoList(function(todos) {
+        for (var i = 0; i < todos.length - 1; i++) {
+            removeTodo(todos[i].id, removeTodo[i]);
+        }
+    });
+}
 
 function createTodo(title, callback) {
     var createRequest = new XMLHttpRequest();
@@ -77,19 +98,28 @@ function reloadTodoList() {
     while (todoList.firstChild) {
         todoList.removeChild(todoList.firstChild);
     }
+    deleteCompletedBtn.style.display = "none";
     todoListPlaceholder.style.display = "block";
     getTodoList(function(todos) {
+        console.log("total num of todos is " + todos.length);
         //total number of todos which have been set as complete
         var completedTodos = todos.filter(function(todo) {
             return todo.isComplete;
         }).length;
-
+        if (completedTodos) {
+            deleteCompletedBtn.style.display = "block";
+        }
         completeCounter.textContent = "" + completedTodos + "/" + todos.length + " complete";
-
         todoListPlaceholder.style.display = "none";
         todos.forEach(function(todo) {
             todoList.appendChild(generateTodoListElement(todo));
         });
+
+        //this makes sure the page doesn't display duplicates which sometimes
+        //occured when reloadTodoList was called multiple times in quick succession
+        if (todoList.getElementsByTagName("li").length !== todos.length) {
+            reloadTodoList();
+        }
     });
 }
 
@@ -100,7 +130,7 @@ function generateTodoListElement(todo) {
     todoText.id = "todo-text" + todo.id;
     todoText.textContent = todo.title;
     listItem.appendChild(todoText);
-    //listItem.textContent = todo.title;
+
     var delBtn = document.createElement("button");
     delBtn.className = "del-btn";
     delBtn.id = "del-btn" + todo.id;
@@ -108,6 +138,7 @@ function generateTodoListElement(todo) {
         removeTodo(todo.id, reloadTodoList);
     };
     delBtn.innerHTML = "Delete";
+
     var updBtn = document.createElement("button");
     updBtn.className = "upd-btn";
     updBtn.id = "upd-btn" + todo.id;
@@ -130,6 +161,7 @@ function generateTodoListElement(todo) {
             updateTodo(todo.id, updInput.value, todo.isComplete, reloadTodoList);
         };
     };
+
     var completedBtn = document.createElement("button");
     completedBtn.innerHTML = "Done";
     completedBtn.className = "completed-btn";
@@ -149,5 +181,4 @@ function generateTodoListElement(todo) {
     listItem.appendChild(delBtn);
     return listItem;
 }
-
 reloadTodoList();

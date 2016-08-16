@@ -121,6 +121,14 @@ module.exports.toggleTodoComplete = function(id) {
     driver.findElement(webdriver.By.id("completed-btn" + id)).click();
 };
 
+module.exports.deleteCompletedTodos = function() {
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("delete-complete-btn"));
+    }, 1000);
+
+    driver.findElement(webdriver.By.id("delete-complete-btn")).click();
+};
+
 module.exports.getTodoTextClass = function(id) {
     driver.wait(function() {
         return driver.isElementPresent(webdriver.By.id("todo-text" + id));
