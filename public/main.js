@@ -120,6 +120,7 @@ function generateTodoListElement(todo) {
 
     var delBtn = document.createElement("button");
     delBtn.className = "del-btn";
+    delBtn.classList.add("button");
     delBtn.id = "del-btn" + todo.id;
     delBtn.onclick = function() {
         removeTodo(todo.id, reloadTodoList);
@@ -128,6 +129,7 @@ function generateTodoListElement(todo) {
 
     var updBtn = document.createElement("button");
     updBtn.className = "upd-btn";
+    updBtn.classList.add("button");
     updBtn.id = "upd-btn" + todo.id;
     updBtn.innerHTML = "Update";
     updBtn.onclick = function() {
@@ -138,6 +140,7 @@ function generateTodoListElement(todo) {
         updInput.setAttribute("type", "text");
         var updConfirmButton = document.createElement("input");
         updConfirmButton.id = "upd-confirm" + todo.id;
+        updConfirmButton.classList.add("button");
         updConfirmButton.setAttribute("type", "submit");
         updConfirmButton.setAttribute("value", "Confirm");
         updForm.appendChild(updInput);
@@ -152,6 +155,8 @@ function generateTodoListElement(todo) {
     var completedBtn = document.createElement("button");
     completedBtn.innerHTML = "Done";
     completedBtn.className = "completed-btn";
+    completedBtn.classList.add("button");
+    completedBtn.id = "completed-btn" + todo.id;
 
     if (todo.isComplete) {
         todoText.classList.add("todo-complete");
@@ -159,7 +164,6 @@ function generateTodoListElement(todo) {
         todoText.classList.remove("todo-complete");
     }
 
-    completedBtn.id = "completed-btn" + todo.id;
     completedBtn.onclick = function() {
         updateTodo(todo.id, todoText.textContent, !todo.isComplete, reloadTodoList);
     };
