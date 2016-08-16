@@ -43,6 +43,18 @@ module.exports = function(port, middleware, callback) {
         }
     });
 
+    app.put("/api/todo/:id", function(req, res) {
+        var newText = req.body.title;
+        var id = req.params.id;
+        var todo = getTodo(id);
+        if(todo) {
+            todo.title = newText;
+            res.sendStatus(200);
+        } else {
+            res.sendStatus(404);
+        }
+    });
+
     function getTodo(id) {
         return _.find(todos, function(todo) {
             return todo.id === id;

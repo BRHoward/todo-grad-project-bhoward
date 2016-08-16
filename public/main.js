@@ -42,6 +42,22 @@ function removeTodo(id, callback) {
     createRequest.send();
 }
 
+function updateTodo(id, newText, callback) {
+    var createRequest = new XMLHttpRequest();
+    createRequest.open("PUT", "/api/todo/" + id);
+    createRequest.setRequestHeader("Content-type", "application/json");
+    createRequest.send(JSON.stringify({
+        title: newText
+    }));
+    createRequest.onload = function() {
+        if (this.status === 200) {
+            callback();
+        } else {
+            error.textContent = "Failed to update todo. Server returned " + this.status + " - " + this.responseText;
+        }
+    }
+}
+
 function getTodoList(callback) {
     var createRequest = new XMLHttpRequest();
     createRequest.open("GET", "/api/todo");
@@ -68,9 +84,11 @@ function reloadTodoList() {
     });
 }
 
+
+
 function generateTodoListElement(todo) {
     var listItem = document.createElement("li");
-    var todoText = document.createElement("span");
+    var todoText = document.createElement("p");
     todoText.textContent = todo.title;
     listItem.appendChild(todoText);
     //listItem.textContent = todo.title;
@@ -88,13 +106,19 @@ function generateTodoListElement(todo) {
     updBtn.innerHTML = "Update";
     updBtn.onclick = function() {
         //create input field for updating the todo
+        updBtn.style.display = "none";
+        var updForm = document.createElement("form");
         var updInput = document.createElement("input");
-        updInput.setAttribute("type","text");
+        updInput.setAttribute("type", "text");
+        var updConfirmButton = document.createElement("input");
+        updConfirmButton.setAttribute("type","submit");
+        updConfirmButton.setAttribute("value","Confirm");
+        updForm.appendChild(updInput);
+        updForm.appendChild(updConfirmButton);  
         updInput.setAttribute("value", todo.title);
-        todoText.parentNode.replaceChild(updInput, todoText);
-        updBtn.innerHTML = "Confirm";
-        updBtn.onclick = function() {
-            updateTodo(todo.id);
+        todoText.parentNode.replaceChild(updForm, todoText);
+        updForm.onsubmit = function() {
+            updateTodo(todo.id,updInput.value,reloadTodoList);
         }
     };
     listItem.appendChild(delBtn);
