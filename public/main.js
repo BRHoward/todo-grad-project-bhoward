@@ -4,7 +4,7 @@ var form = document.getElementById("todo-form");
 var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
 var completeCounter = document.getElementById("count-label");
-var deleteCompletedBtn = document.getElementById("delete-complete-btn");
+var deleteCompletedTodoBtn = document.getElementById("delete-complete-btn");
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -15,8 +15,7 @@ form.onsubmit = function(event) {
     event.preventDefault();
 };
 
-//when clicked all the currently completed todos are deleted
-deleteCompletedBtn.onclick = function() {
+deleteCompletedTodoBtn.onclick = function() {
     getTodoList(function(todos) {
         todos.forEach(function(todo) {
             if (todo.isComplete) {
@@ -89,19 +88,18 @@ function reloadTodoList() {
     while (todoList.firstChild) {
         todoList.removeChild(todoList.firstChild);
     }
-    deleteCompletedBtn.style.display = "none";
     todoListPlaceholder.style.display = "block";
     getTodoList(function(todos) {
-        //total number of todos which have been set as complete
-        var completedTodos = todos.filter(function(todo) {
+        var totalNumberOfCompletedTodos = todos.filter(function(todo) {
             return todo.isComplete;
         }).length;
 
-        //delete complete button is shown when at least one todo has been set as complete
-        if (completedTodos) {
-            deleteCompletedBtn.style.display = "block";
+        if (totalNumberOfCompletedTodos > 0) {
+            deleteCompletedTodoBtn.style.display = "block";
+        } else {
+            deleteCompletedTodoBtn.style.display = "none";
         }
-        completeCounter.textContent = "" + completedTodos + "/" + todos.length + " complete";
+        completeCounter.textContent = "" + totalNumberOfCompletedTodos + "/" + todos.length + " complete";
         todoListPlaceholder.style.display = "none";
         todos.forEach(function(todo) {
             todoList.appendChild(generateTodoListElement(todo));
@@ -110,7 +108,7 @@ function reloadTodoList() {
         //this makes sure the page doesn't display duplicates which sometimes
         //occured when reloadTodoList was called multiple times in quick succession
         if (todoList.getElementsByTagName("li").length !== todos.length) {
-            reloadTodoList();
+           reloadTodoList();
         }
     });
 }
@@ -158,7 +156,6 @@ function generateTodoListElement(todo) {
     completedBtn.innerHTML = "Done";
     completedBtn.className = "completed-btn";
 
-    //if the todo has been set as complete then give it a specific class
     if (todo.isComplete) {
         todoText.classList.add("todo-complete");
     } else if (todoText.classList.contains("todo-complete")) {
