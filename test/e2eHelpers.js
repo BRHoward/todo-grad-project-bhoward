@@ -74,6 +74,11 @@ module.exports.getTodoList = function() {
     return driver.findElements(webdriver.By.css("#todo-list li"));
 };
 
+module.exports.getTodoText = function(id) {
+    var textElement = driver.findElement(webdriver.By.id("todo-text" + id));
+    return textElement.getText();
+};
+
 module.exports.addTodo = function(text) {
     driver.findElement(webdriver.By.id("new-todo")).sendKeys(text);
     driver.findElement(webdriver.By.id("submit-todo")).click();
@@ -90,6 +95,24 @@ module.exports.removeTodo = function(id) {
     });
 };
 
+module.exports.updateTodo = function(id, newText) {
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("upd-btn" + id));
+    }, 1000);
+    driver.findElement(webdriver.By.id("upd-btn" + id)).then(function(button) {
+        button.click();
+    });
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("upd-input" + id));
+    }, 1000);
+    driver.findElement(webdriver.By.id("upd-input" + id)).then(function(inputField) {
+        inputField.sendKeys(newText);
+    });
+    driver.findElement(webdriver.By.id("upd-confirm" + id)).then(function(button) {
+        button.click();
+    });
+};
+
 module.exports.setupErrorRoute = function(action, route) {
     if (action === "get") {
         router.get(route, function(req, res) {
@@ -99,6 +122,11 @@ module.exports.setupErrorRoute = function(action, route) {
     if (action === "post") {
         router.post(route, function(req, res) {
             res.sendStatus(500);
+        });
+    }
+    if (action === "put") {
+        router.put(route, function(req, res) {
+            res.sendStatus(404);
         });
     }
 };

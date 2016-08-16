@@ -47,7 +47,7 @@ module.exports = function(port, middleware, callback) {
         var newText = req.body.title;
         var id = req.params.id;
         var todo = getTodo(id);
-        if(todo) {
+        if (todo) {
             todo.title = newText;
             res.sendStatus(200);
         } else {

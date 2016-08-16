@@ -55,7 +55,7 @@ function updateTodo(id, newText, callback) {
         } else {
             error.textContent = "Failed to update todo. Server returned " + this.status + " - " + this.responseText;
         }
-    }
+    };
 }
 
 function getTodoList(callback) {
@@ -84,11 +84,10 @@ function reloadTodoList() {
     });
 }
 
-
-
 function generateTodoListElement(todo) {
     var listItem = document.createElement("li");
     var todoText = document.createElement("p");
+    todoText.id = "todo-text" + todo.id;
     todoText.textContent = todo.title;
     listItem.appendChild(todoText);
     //listItem.textContent = todo.title;
@@ -96,7 +95,6 @@ function generateTodoListElement(todo) {
     delBtn.className = "del-btn";
     delBtn.id = "del-btn" + todo.id;
     delBtn.onclick = function() {
-        //remove the 
         removeTodo(todo.id, reloadTodoList);
     };
     delBtn.innerHTML = "Delete";
@@ -109,17 +107,19 @@ function generateTodoListElement(todo) {
         updBtn.style.display = "none";
         var updForm = document.createElement("form");
         var updInput = document.createElement("input");
+        updInput.id = "upd-input" + todo.id;
         updInput.setAttribute("type", "text");
         var updConfirmButton = document.createElement("input");
-        updConfirmButton.setAttribute("type","submit");
-        updConfirmButton.setAttribute("value","Confirm");
+        updConfirmButton.id = "upd-confirm" + todo.id;
+        updConfirmButton.setAttribute("type", "submit");
+        updConfirmButton.setAttribute("value", "Confirm");
         updForm.appendChild(updInput);
-        updForm.appendChild(updConfirmButton);  
+        updForm.appendChild(updConfirmButton);
         updInput.setAttribute("value", todo.title);
         todoText.parentNode.replaceChild(updForm, todoText);
         updForm.onsubmit = function() {
-            updateTodo(todo.id,updInput.value,reloadTodoList);
-        }
+            updateTodo(todo.id, updInput.value, reloadTodoList);
+        };
     };
     listItem.appendChild(delBtn);
     listItem.appendChild(updBtn);
