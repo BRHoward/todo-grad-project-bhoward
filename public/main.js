@@ -88,6 +88,7 @@ function reloadTodoList() {
 function generateTodoListElement(todo) {
     var listItem = document.createElement("li");
     var todoText = document.createElement("p");
+    todoText.class = "todo-text";
     todoText.id = "todo-text" + todo.id;
     todoText.textContent = todo.title;
     listItem.appendChild(todoText);
@@ -124,11 +125,13 @@ function generateTodoListElement(todo) {
     var completedBtn = document.createElement("button");
     completedBtn.innerHTML = "Done";
     completedBtn.className = "completed-btn";
-    if(todo.isComplete){
-        todoText.classList.add("todo-complete")
-    } else if(todoText.classList.contains("todo-complete")) {
+
+    if (todo.isComplete) {
+        todoText.classList.add("todo-complete");
+    } else if (todoText.classList.contains("todo-complete")) {
         todoText.classList.remove("todo-complete");
     }
+
     completedBtn.id = "completed-btn" + todo.id;
     completedBtn.onclick = function() {
         updateTodo(todo.id, todoText.textContent, !todo.isComplete, reloadTodoList);

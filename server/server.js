@@ -27,7 +27,6 @@ module.exports = function(port, middleware, callback) {
 
     // Read
     app.get("/api/todo", function(req, res) {
-        console.log(todos);
         res.json(todos);
     });
 

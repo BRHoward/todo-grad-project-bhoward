@@ -70,6 +70,7 @@ describe("server", function() {
                 request.get(todoListUrl, function(error, response, body) {
                     assert.deepEqual(JSON.parse(body), [{
                         title: "This is a TODO item",
+                        isComplete : false,
                         done: false,
                         id: "0"
                     }]);

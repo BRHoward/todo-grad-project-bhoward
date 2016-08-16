@@ -113,6 +113,21 @@ module.exports.updateTodo = function(id, newText) {
     });
 };
 
+module.exports.toggleTodoComplete = function(id) {
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("completed-btn" + id));
+    }, 1000);
+
+    driver.findElement(webdriver.By.id("completed-btn" + id)).click();
+};
+
+module.exports.getTodoTextClass = function(id) {
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("todo-text" + id));
+    }, 1000);
+    return driver.findElement(webdriver.By.id("todo-text" + id)).getAttribute("class");
+};
+
 module.exports.setupErrorRoute = function(action, route) {
     if (action === "get") {
         router.get(route, function(req, res) {

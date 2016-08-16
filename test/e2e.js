@@ -1,5 +1,6 @@
 var testing = require("selenium-webdriver/testing");
 var assert = require("chai").assert;
+var expect = require("chai").expect;
 var helpers = require("./e2eHelpers");
 
 testing.describe("end to end", function() {
@@ -82,6 +83,25 @@ testing.describe("end to end", function() {
             helpers.updateTodo(0, " - now updated");
             helpers.getTodoText(0).then(function(text) {
                 assert.equal(text, "new todo item - now updated");
+            });
+        });
+    });
+    testing.describe("on setting a todo item as complete", function() {
+        testing.it("adds a new complete class to the todo text", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("new todo item");
+            helpers.toggleTodoComplete(0);
+            helpers.getTodoTextClass(0).then(function(classname) {
+                expect(classname).include("todo-complete");
+            });
+        });
+        testing.it("takes complete class off when toggled twice", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("new todo item");
+            helpers.toggleTodoComplete(0);
+            helpers.toggleTodoComplete(0);
+            helpers.getTodoTextClass(0).then(function(classname) {
+                expect(classname).not.include("todo-complete");
             });
         });
     });
