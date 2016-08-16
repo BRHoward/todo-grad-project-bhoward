@@ -92,11 +92,12 @@ function reloadTodoList() {
     deleteCompletedBtn.style.display = "none";
     todoListPlaceholder.style.display = "block";
     getTodoList(function(todos) {
-        console.log("total num of todos is " + todos.length);
         //total number of todos which have been set as complete
         var completedTodos = todos.filter(function(todo) {
             return todo.isComplete;
         }).length;
+
+        //delete complete button is shown when at least one todo has been set as complete
         if (completedTodos) {
             deleteCompletedBtn.style.display = "block";
         }
@@ -157,6 +158,7 @@ function generateTodoListElement(todo) {
     completedBtn.innerHTML = "Done";
     completedBtn.className = "completed-btn";
 
+    //if the todo has been set as complete then give it a specific class
     if (todo.isComplete) {
         todoText.classList.add("todo-complete");
     } else if (todoText.classList.contains("todo-complete")) {
