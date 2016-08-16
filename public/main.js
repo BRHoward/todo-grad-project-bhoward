@@ -85,9 +85,10 @@ function getTodoList(callback) {
 }
 
 function reloadTodoList() {
-    while (todoList.firstChild) {
-        todoList.removeChild(todoList.firstChild);
-    }
+    todoList = document.getElementById("todo-list");
+    var newList = document.createElement("ul");
+    newList.id = "todo-list";
+
     todoListPlaceholder.style.display = "block";
     getTodoList(function(todos) {
         var totalNumberOfCompletedTodos = todos.filter(function(todo) {
@@ -102,15 +103,11 @@ function reloadTodoList() {
         completeCounter.textContent = "" + totalNumberOfCompletedTodos + "/" + todos.length + " complete";
         todoListPlaceholder.style.display = "none";
         todos.forEach(function(todo) {
-            todoList.appendChild(generateTodoListElement(todo));
+            newList.appendChild(generateTodoListElement(todo));
         });
-
-        //this makes sure the page doesn't display duplicates which sometimes
-        //occured when reloadTodoList was called multiple times in quick succession
-        if (todoList.getElementsByTagName("li").length !== todos.length) {
-           reloadTodoList();
-        }
     });
+
+    todoList.parentNode.replaceChild(newList, todoList);
 }
 
 function generateTodoListElement(todo) {
