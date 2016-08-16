@@ -3,6 +3,7 @@ var todoListPlaceholder = document.getElementById("todo-list-placeholder");
 var form = document.getElementById("todo-form");
 var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
+var completeCounter = document.getElementById("count-label");
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -78,6 +79,13 @@ function reloadTodoList() {
     }
     todoListPlaceholder.style.display = "block";
     getTodoList(function(todos) {
+        //total number of todos which have been set as complete
+        var completedTodos = todos.filter(function(todo) {
+            return todo.isComplete;
+        }).length;
+
+        completeCounter.textContent = "" + completedTodos + "/" + todos.length + " complete";
+
         todoListPlaceholder.style.display = "none";
         todos.forEach(function(todo) {
             todoList.appendChild(generateTodoListElement(todo));

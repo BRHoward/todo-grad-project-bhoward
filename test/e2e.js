@@ -104,5 +104,13 @@ testing.describe("end to end", function() {
                 expect(classname).not.include("todo-complete");
             });
         });
+        testing.it("updates the complete counter", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("new todo item");
+            helpers.toggleTodoComplete(0);
+            helpers.getCompleteCounterText().then(function(counterText) {
+                assert.equal(counterText, "1/1 complete");
+            });
+        });
     });
 });

@@ -34,3 +34,9 @@ h1 {
     color:green;
     font-weight:bold;
 }
+
+#count-label {
+    margin-top:20px;
+    font-size:150%;
+    font-weight:bold;
+}

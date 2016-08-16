@@ -128,6 +128,13 @@ module.exports.getTodoTextClass = function(id) {
     return driver.findElement(webdriver.By.id("todo-text" + id)).getAttribute("class");
 };
 
+module.exports.getCompleteCounterText = function() {
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("count-label"));
+    }, 1000);
+    return driver.findElement(webdriver.By.id("count-label")).getText();
+};
+
 module.exports.setupErrorRoute = function(action, route) {
     if (action === "get") {
         router.get(route, function(req, res) {
