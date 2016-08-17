@@ -85,7 +85,6 @@ module.exports.addTodo = function(text) {
 };
 
 module.exports.removeTodo = function(id) {
-    //waiting for the delete button to appear before trying to click it
     driver.wait(function() {
         return driver.isElementPresent(webdriver.By.id("del-btn" + id));
     }, 1000);
@@ -140,7 +139,23 @@ module.exports.getCompleteCounterText = function() {
     driver.wait(function() {
         return driver.isElementPresent(webdriver.By.id("count-label"));
     }, 1000);
+
     return driver.findElement(webdriver.By.id("count-label")).getText();
+};
+
+module.exports.filterTodos = function(filter) {
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("filter-button-" + filter));
+    }, 1000);
+    driver.findElement(webdriver.By.id("filter-button-" + filter)).click();
+};
+
+module.exports.getTodoItemStyle = function(id) {
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("todo-item" + id));
+    }, 1000);
+
+    return driver.findElement(webdriver.By.id("todo-item" + id)).getAttribute("style");
 };
 
 module.exports.setupErrorRoute = function(action, route) {

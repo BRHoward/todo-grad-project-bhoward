@@ -126,6 +126,7 @@ function reloadTodoList() {
 function generateTodoListElement(todo) {
     var listItem = document.createElement("li");
     listItem.className = "todo-item";
+    listItem.id = "todo-item" + todo.id;
     var todoText = document.createElement("p");
     todoText.className = "todo-text";
     todoText.id = "todo-text" + todo.id;
