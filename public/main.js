@@ -160,20 +160,17 @@ function generateTodoListElement(todo) {
     todoText.textContent = todo.title;
     listItem.appendChild(todoText);
 
-    var delBtn = document.createElement("button");
-    delBtn.className = "del-btn";
-    delBtn.classList.add("button");
-    delBtn.id = "del-btn" + todo.id;
+    var delBtn = makeButton(todo.id, "del", "Delete");
     delBtn.onclick = function() {
         removeTodo(todo.id, reloadTodoList);
     };
-    delBtn.innerHTML = "Delete";
 
-    var updBtn = document.createElement("button");
-    updBtn.className = "upd-btn";
-    updBtn.classList.add("button");
-    updBtn.id = "upd-btn" + todo.id;
-    updBtn.innerHTML = "Update";
+    var completedBtn = makeButton(todo.id, "completed", "Done");
+    completedBtn.onclick = function() {
+        updateTodo(todo.id, todoText.textContent, !todo.isComplete, reloadTodoList);
+    };
+
+    var updBtn = makeButton(todo.id, "upd", "Update");
     updBtn.onclick = function() {
         //create input field for updating the todo
         var updForm = document.createElement("form");
@@ -194,12 +191,8 @@ function generateTodoListElement(todo) {
         };
     };
 
-    var completedBtn = document.createElement("button");
-    completedBtn.innerHTML = "Done";
-    completedBtn.className = "completed-btn";
-    completedBtn.classList.add("button");
-    completedBtn.id = "completed-btn" + todo.id;
-
+    //if the todo has been tagged as complete then add the complete css class to the element
+    //if the todo is uncomplete but already has the complete class then remove it
     if (todo.isComplete) {
         listItem.classList.add("todo-item-complete");
         todoText.classList.add("todo-text-complete");
@@ -208,30 +201,38 @@ function generateTodoListElement(todo) {
         todoText.classList.remove("todo-text-complete");
     }
 
-    completedBtn.onclick = function() {
-        updateTodo(todo.id, todoText.textContent, !todo.isComplete, reloadTodoList);
-    };
     listItem.appendChild(completedBtn);
     listItem.appendChild(updBtn);
     listItem.appendChild(delBtn);
     return listItem;
 }
 
+function makeButton(id, tag, label) {
+    var newButton = document.createElement("button");
+    newButton.className = tag + "-btn button";
+    newButton.id = tag + "-btn" + id;
+    newButton.innerHTML = label;
+    return newButton;
+}
+
 function filterTodos(filter) {
     var todoListItems = document.getElementsByClassName("todo-item");
     var i = 0;
     switch (filter) {
+        //displays both complete and uncomplete todos
         case "all":
             for (i = 0; i < todoListItems.length; i++) {
                 todoListItems[i].style.display = "list-item";
             }
             break;
+        //only displays the active (uncompleted) todos
         case "active":
             for (i = 0; i < todoListItems.length; i++) {
                 todoListItems[i].style.display =
                     todoListItems[i].classList.contains("todo-item-complete") ? "none" : "list-item";
             }
             break;
+        //only displays the completed todos
         case "complete":
             for (i = 0; i < todoListItems.length; i++) {
                 todoListItems[i].style.display =
