@@ -240,5 +240,5 @@ function filterTodos(filter) {
             break;
     }
 }
-
 reloadTodoList();
+var timerId = setInterval(reloadTodoList, 30000);
