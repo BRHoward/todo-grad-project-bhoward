@@ -5,6 +5,9 @@ var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
 var completeCounter = document.getElementById("count-label");
 var deleteCompletedTodoBtn = document.getElementById("delete-complete-btn");
+var filterButtonAll = document.getElementById("filter-button-all");
+var filterButtonActive = document.getElementById("filter-button-active");
+var filterButtonComplete = document.getElementById("filter-button-completed");
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -24,6 +27,16 @@ deleteCompletedTodoBtn.onclick = function() {
         });
     });
 };
+
+filterButtonAll.onclick = function() {
+    filterTodos("all");
+}
+filterButtonActive.onclick = function() {
+    filterTodos("active");
+}
+filterButtonComplete.onclick = function() {
+    filterTodos("complete");
+}
 
 function createTodo(title, callback) {
     var createRequest = new XMLHttpRequest();
@@ -112,8 +125,9 @@ function reloadTodoList() {
 
 function generateTodoListElement(todo) {
     var listItem = document.createElement("li");
+    listItem.className = "todo-item";
     var todoText = document.createElement("p");
-    todoText.class = "todo-text";
+    todoText.className = "todo-text";
     todoText.id = "todo-text" + todo.id;
     todoText.textContent = todo.title;
     listItem.appendChild(todoText);
@@ -159,9 +173,11 @@ function generateTodoListElement(todo) {
     completedBtn.id = "completed-btn" + todo.id;
 
     if (todo.isComplete) {
-        todoText.classList.add("todo-complete");
-    } else if (todoText.classList.contains("todo-complete")) {
-        todoText.classList.remove("todo-complete");
+        listItem.classList.add("todo-item-complete");
+        todoText.classList.add("todo-text-complete");
+    } else if (todoText.classList.contains("todo-text-complete")) {
+        listItem.classList.remove("todo-item-complete");
+        todoText.classList.remove("todo-text-complete");
     }
 
     completedBtn.onclick = function() {
@@ -172,4 +188,26 @@ function generateTodoListElement(todo) {
     listItem.appendChild(delBtn);
     return listItem;
 }
+
+function filterTodos(filter) {
+    var todoListItems = document.getElementsByClassName("todo-item");
+    switch (filter) {
+        case "all":
+            for (var i = 0; i < todoListItems.length; i++) {
+                todoListItems[i].style.display = "list-item";
+            }
+            break;
+        case "active":
+            for (var i = 0; i < todoListItems.length; i++) {
+                todoListItems[i].style.display = todoListItems[i].classList.contains("todo-item-complete") ? "none" : "list-item"
+            }
+            break;
+        case "complete":
+            for (var i = 0; i < todoListItems.length; i++) {
+                todoListItems[i].style.display = todoListItems[i].classList.contains("todo-item-complete") ? "list-item" : "none"
+            }
+            break;
+    }
+}
+
 reloadTodoList();
