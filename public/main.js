@@ -30,13 +30,13 @@ deleteCompletedTodoBtn.onclick = function() {
 
 filterButtonAll.onclick = function() {
     filterTodos("all");
-}
+};
 filterButtonActive.onclick = function() {
     filterTodos("active");
-}
+};
 filterButtonComplete.onclick = function() {
     filterTodos("complete");
-}
+};
 
 function createTodo(title, callback) {
     var createRequest = new XMLHttpRequest();
@@ -191,20 +191,23 @@ function generateTodoListElement(todo) {
 
 function filterTodos(filter) {
     var todoListItems = document.getElementsByClassName("todo-item");
+    var i = 0;
     switch (filter) {
         case "all":
-            for (var i = 0; i < todoListItems.length; i++) {
+            for (i = 0; i < todoListItems.length; i++) {
                 todoListItems[i].style.display = "list-item";
             }
             break;
         case "active":
-            for (var i = 0; i < todoListItems.length; i++) {
-                todoListItems[i].style.display = todoListItems[i].classList.contains("todo-item-complete") ? "none" : "list-item"
+            for (i = 0; i < todoListItems.length; i++) {
+                todoListItems[i].style.display =
+                    todoListItems[i].classList.contains("todo-item-complete") ? "none" : "list-item";
             }
             break;
         case "complete":
-            for (var i = 0; i < todoListItems.length; i++) {
-                todoListItems[i].style.display = todoListItems[i].classList.contains("todo-item-complete") ? "list-item" : "none"
+            for (i = 0; i < todoListItems.length; i++) {
+                todoListItems[i].style.display =
+                    todoListItems[i].classList.contains("todo-item-complete") ? "list-item" : "none";
             }
             break;
     }

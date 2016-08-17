@@ -92,7 +92,7 @@ testing.describe("end to end", function() {
             helpers.addTodo("new todo item");
             helpers.toggleTodoComplete(0);
             helpers.getTodoTextClass(0).then(function(classname) {
-                expect(classname).include("todo-complete");
+                expect(classname).include("todo-text-complete");
             });
         });
         testing.it("takes complete class off when toggled twice", function() {
@@ -101,7 +101,7 @@ testing.describe("end to end", function() {
             helpers.toggleTodoComplete(0);
             helpers.toggleTodoComplete(0);
             helpers.getTodoTextClass(0).then(function(classname) {
-                expect(classname).not.include("todo-complete");
+                expect(classname).not.include("todo-text-complete");
             });
         });
         testing.it("updates the complete counter", function() {
