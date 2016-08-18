@@ -11,21 +11,28 @@ var filterButtonComplete = document.getElementById("filter-button-completed");
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
-    createTodo(title, function() {
-        reloadTodoList();
+    var dataToSend = JSON.stringify({
+        title: title
     });
+    makeRequest("api/todo", "POST", dataToSend, "Failed to create item.")
+        .then(reloadTodoList);
     todoTitle.value = "";
     event.preventDefault();
 };
 
 deleteCompletedTodoBtn.onclick = function() {
-    getTodoList(function(todos) {
-        todos.forEach(function(todo) {
-            if (todo.isComplete) {
-                removeTodo(todo.id, reloadTodoList);
-            }
+    makeRequest("api/todo/", "GET", null, "Failed to get list.")
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(todos) {
+            todos.forEach(function(todo) {
+                if (todo.isComplete) {
+                    makeRequest("api/todo/" + todo.id, "DELETE", null, "Failed to delete item.")
+                        .then(reloadTodoList);
+                }
+            });
         });
-    });
 };
 
 filterButtonAll.onclick = function() {
@@ -38,86 +45,22 @@ filterButtonComplete.onclick = function() {
     filterTodos("complete");
 };
 
-function createTodo(title, callback) {
-    var dataToSend = JSON.stringify({
-        title: title
-    });
-    fetch("/api/todo/", {
-            method: "POST",
+function makeRequest(url, method, body, errorText) {
+    return fetch(url, {
+            method: method,
             headers: {
-                "Accept": "application/json",
+                //"Accept": "application/json",
                 "Content-Type": "application/json"
             },
-            body: dataToSend
+            body: body
         })
         .then(function(response) {
-            if (response.status === 201) {
-                callback();
+            if (response.ok) {
+                return response;
             } else {
-                var err = "Failed to create item. Server returned " + response.status + " - " + response.statusText;
+                var err = errorText + " Server returned " + response.status + " - " + response.statusText;
                 throw err;
             }
-        })
-        .catch(function(err) {
-            error.textContent = err;
-        });
-}
-
-function removeTodo(id, callback) {
-    fetch("/api/todo/" + id, {
-            method: "DELETE"
-        })
-        .then(function(response) {
-            if (response.status === 200) {
-                callback();
-            } else {
-                var err = "Failed to delete item. Server returned " + response.status + " - " + response.statusText;
-                throw err;
-            }
-        })
-        .catch(function(err) {
-            error.textContent = err;
-        });
-}
-
-function updateTodo(id, newText, completeState, callback) {
-    var dataToSend = JSON.stringify({
-        title: newText,
-        completeState: completeState
-    });
-    fetch("/api/todo/" + id, {
-            method: "PUT",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: dataToSend
-        })
-        .then(function(response) {
-            if (response.status === 200) {
-                callback();
-            } else {
-                var err = "Failed to update item. Server returned " + response.status + " - " + response.statusText;
-                throw err;
-            }
-        })
-        .catch(function(err) {
-            error.textContent = err;
-        });
-}
-
-function getTodoList(callback) {
-    fetch("/api/todo/")
-        .then(function(response) {
-            if (response.status === 200) {
-                return response.json();
-            } else {
-                var err = "Failed to get list. Server returned " + response.status + " - " + response.statusText;
-                throw err;
-            }
-        })
-        .then(function(response) {
-            callback(response);
         })
         .catch(function(err) {
             error.textContent = err;
@@ -130,22 +73,27 @@ function reloadTodoList() {
     newList.id = "todo-list";
 
     todoListPlaceholder.style.display = "block";
-    getTodoList(function(todos) {
-        var totalNumberOfCompletedTodos = todos.filter(function(todo) {
-            return todo.isComplete;
-        }).length;
 
-        if (totalNumberOfCompletedTodos > 0) {
-            deleteCompletedTodoBtn.style.display = "block";
-        } else {
-            deleteCompletedTodoBtn.style.display = "none";
-        }
-        completeCounter.textContent = "" + totalNumberOfCompletedTodos + "/" + todos.length + " complete";
-        todoListPlaceholder.style.display = "none";
-        todos.forEach(function(todo) {
-            newList.appendChild(generateTodoListElement(todo));
+    makeRequest("api/todo/", "GET", null, "Failed to get list.")
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(todos) {
+            var totalNumberOfCompletedTodos = todos.filter(function(todo) {
+                return todo.isComplete;
+            }).length;
+
+            if (totalNumberOfCompletedTodos > 0) {
+                deleteCompletedTodoBtn.style.display = "block";
+            } else {
+                deleteCompletedTodoBtn.style.display = "none";
+            }
+            completeCounter.textContent = "" + totalNumberOfCompletedTodos + "/" + todos.length + " complete";
+            todoListPlaceholder.style.display = "none";
+            todos.forEach(function(todo) {
+                newList.appendChild(generateTodoListElement(todo));
+            });
         });
-    });
 
     todoList.parentNode.replaceChild(newList, todoList);
 }
@@ -162,12 +110,18 @@ function generateTodoListElement(todo) {
 
     var delBtn = makeButton(todo.id, "del", "Delete");
     delBtn.onclick = function() {
-        removeTodo(todo.id, reloadTodoList);
+        makeRequest("api/todo/" + todo.id, "DELETE", null, "Failed to delete item.")
+            .then(reloadTodoList);
     };
 
     var completedBtn = makeButton(todo.id, "completed", "Done");
     completedBtn.onclick = function() {
-        updateTodo(todo.id, todoText.textContent, !todo.isComplete, reloadTodoList);
+        var dataToSend = JSON.stringify({
+            title: todoText.textContent,
+            completeState: !todo.isComplete
+        });
+        makeRequest("api/todo/" + todo.id, "PUT", dataToSend, "Failed to update item.")
+            .then(reloadTodoList);
     };
 
     var updBtn = makeButton(todo.id, "upd", "Update");
@@ -187,12 +141,17 @@ function generateTodoListElement(todo) {
         updInput.setAttribute("value", todo.title);
         todoText.parentNode.replaceChild(updForm, todoText);
         updForm.onsubmit = function() {
-            updateTodo(todo.id, updInput.value, todo.isComplete, reloadTodoList);
+            var dataToSend = JSON.stringify({
+                title: updInput.value,
+                completeState: todo.isComplete
+            });
+            makeRequest("api/todo/" + todo.id, "PUT", dataToSend, "Failed to update item.")
+                .then(reloadTodoList);
         };
     };
 
     //if the todo has been tagged as complete then add the complete css class to the element
-    //if the todo is uncomplete but already has the complete class then remove it
+    //if the todo is uncomplete but already has the complete css class then remove it
     if (todo.isComplete) {
         listItem.classList.add("todo-item-complete");
         todoText.classList.add("todo-text-complete");
@@ -225,14 +184,14 @@ function filterTodos(filter) {
                 todoListItems[i].style.display = "list-item";
             }
             break;
-        //only displays the active (uncompleted) todos
+            //only displays the active (uncompleted) todos
         case "active":
             for (i = 0; i < todoListItems.length; i++) {
                 todoListItems[i].style.display =
                     todoListItems[i].classList.contains("todo-item-complete") ? "none" : "list-item";
             }
             break;
-        //only displays the completed todos
+            //only displays the completed todos
         case "complete":
             for (i = 0; i < todoListItems.length; i++) {
                 todoListItems[i].style.display =
