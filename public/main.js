@@ -89,13 +89,13 @@ angular.module("todoList", [])
                         todo.filtered = false;
                     });
                     break;
-                //only displays the active (uncompleted) todos
+                    //only displays the active (uncompleted) todos
                 case "active":
                     $scope.todos.forEach(function(todo) {
                         todo.filtered = todo.isComplete ? true : false;
                     });
                     break;
-                //only displays the completed todos
+                    //only displays the completed todos
                 case "complete":
                     $scope.todos.forEach(function(todo) {
                         todo.filtered = todo.isComplete ? false : true;
