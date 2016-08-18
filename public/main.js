@@ -149,14 +149,9 @@ function generateTodoListElement(todo) {
         };
     };
 
-    //if the todo has been tagged as complete then add the complete css class to the element
-    //if the todo is uncomplete but already has the complete css class then remove it
     if (todo.isComplete) {
         listItem.classList.add("todo-item-complete");
         todoText.classList.add("todo-text-complete");
-    } else if (todoText.classList.contains("todo-text-complete")) {
-        listItem.classList.remove("todo-item-complete");
-        todoText.classList.remove("todo-text-complete");
     }
 
     listItem.appendChild(completedBtn);
