@@ -75,6 +75,9 @@ module.exports.getTodoList = function() {
 };
 
 module.exports.getTodoText = function(id) {
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("todo-text" + id));
+    }, 1000);
     var textElement = driver.findElement(webdriver.By.id("todo-text" + id));
     return textElement.getText();
 };
@@ -107,6 +110,9 @@ module.exports.updateTodo = function(id, newText) {
     driver.findElement(webdriver.By.id("upd-input" + id)).then(function(inputField) {
         inputField.sendKeys(newText);
     });
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("upd-confirm" + id));
+    }, 1000);
     driver.findElement(webdriver.By.id("upd-confirm" + id)).then(function(button) {
         button.click();
     });
@@ -150,12 +156,12 @@ module.exports.filterTodos = function(filter) {
     driver.findElement(webdriver.By.id("filter-button-" + filter)).click();
 };
 
-module.exports.getTodoItemStyle = function(id) {
+module.exports.getTodoItemClass = function(id) {
     driver.wait(function() {
         return driver.isElementPresent(webdriver.By.id("todo-item" + id));
     }, 1000);
 
-    return driver.findElement(webdriver.By.id("todo-item" + id)).getAttribute("style");
+    return driver.findElement(webdriver.By.id("todo-item" + id)).getAttribute("class");
 };
 
 module.exports.setupErrorRoute = function(action, route) {

@@ -14,14 +14,20 @@ module.exports = function(port, middleware, callback) {
     var latestId = 0;
     var todos = [];
 
+    function todo(id, title) {
+        this.id = id;
+        this.title = title;
+        this.isComplete = false;
+        this.beingUpdated = false;
+        this.filtered = false;
+    }
+
     // Create
     app.post("/api/todo", function(req, res) {
-        var todo = req.body;
-        todo.id = latestId.toString();
-        todo.isComplete = false;
+        var newTodo = new todo(latestId.toString(), req.body.title);
         latestId++;
-        todos.push(todo);
-        res.set("Location", "/api/todo/" + todo.id);
+        todos.push(newTodo);
+        res.set("Location", "/api/todo/" + newTodo.id);
         res.sendStatus(201);
     });
 
@@ -44,13 +50,15 @@ module.exports = function(port, middleware, callback) {
         }
     });
 
+    //changing this
     app.put("/api/todo/:id", function(req, res) {
-        var newText = req.body.title;
         var id = req.params.id;
-        var todo = getTodo(id);
-        if (todo) {
-            todo.title = newText;
-            todo.isComplete = req.body.completeState;
+        todos.forEach(function(todo, index) {
+            if (todo.id === id) {
+                todos[index] = req.body;
+            }
+        });
+        if (getTodo(id)) {
             res.sendStatus(200);
         } else {
             res.sendStatus(404);

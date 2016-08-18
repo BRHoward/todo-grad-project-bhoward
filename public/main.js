@@ -1,198 +1,110 @@
-var todoList = document.getElementById("todo-list");
-var todoListPlaceholder = document.getElementById("todo-list-placeholder");
-var form = document.getElementById("todo-form");
-var todoTitle = document.getElementById("new-todo");
-var error = document.getElementById("error");
-var completeCounter = document.getElementById("count-label");
-var deleteCompletedTodoBtn = document.getElementById("delete-complete-btn");
-var filterButtonAll = document.getElementById("filter-button-all");
-var filterButtonActive = document.getElementById("filter-button-active");
-var filterButtonComplete = document.getElementById("filter-button-completed");
+/*global angular*/
 
-form.onsubmit = function(event) {
-    var title = todoTitle.value;
-    var dataToSend = JSON.stringify({
-        title: title
-    });
-    makeRequest("api/todo", "POST", dataToSend, "Failed to create item.")
-        .then(reloadTodoList);
-    todoTitle.value = "";
-    event.preventDefault();
-};
+angular.module("todoList", [])
+    .controller("TodoListController", ["$scope", "$http", function($scope, $http) {
 
-deleteCompletedTodoBtn.onclick = function() {
-    makeRequest("api/todo/", "GET", null, "Failed to get list.")
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(todos) {
-            todos.forEach(function(todo) {
-                if (todo.isComplete) {
-                    makeRequest("api/todo/" + todo.id, "DELETE", null, "Failed to delete item.");
-                }
-            });
-        })
-        .then(reloadTodoList);
-};
+        $scope.todos = [];
+        $scope.inputBoxText = "";
+        $scope.errorText = "";
+        $scope.todosLoaded = false;
 
-filterButtonAll.onclick = function() {
-    filterTodos("all");
-};
-filterButtonActive.onclick = function() {
-    filterTodos("active");
-};
-filterButtonComplete.onclick = function() {
-    filterTodos("complete");
-};
+        $scope.getTodos = function() {
+            $scope.todosLoaded = false;
+            $http({
+                    method: "GET",
+                    url: "api/todo/"
+                })
+                .then(function(response) {
+                    $scope.todos = response.data;
+                    $scope.todosLoaded = true;
+                }, function(response) {
+                    $scope.errorText =
+                        "Failed to get list. Server returned " + response.status + " - " + response.statusText;
+                });
+        };
 
-function makeRequest(url, method, body, errorText) {
-    return fetch(url, {
-            method: method,
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: body
-        })
-        .then(function(response) {
-            if (response.ok) {
-                return response;
-            } else {
-                var err = errorText + " Server returned " + response.status + " - " + response.statusText;
-                throw err;
-            }
-        })
-        .catch(function(err) {
-            error.textContent = err;
-        });
-}
+        $scope.addTodo = function() {
+            $http({
+                    method: "POST",
+                    url: "api/todo/",
+                    data: {
+                        title: $scope.inputBoxText
+                    }
+                })
+                .then(function(response) {
+                    $scope.inputBoxText = "";
+                    $scope.getTodos();
+                }, function(response) {
+                    $scope.errorText =
+                        "Failed to create item. Server returned " + response.status + " - " + response.statusText;
+                });
+        };
 
-function reloadTodoList() {
-    todoList = document.getElementById("todo-list");
-    var newList = document.createElement("ul");
-    newList.id = "todo-list";
+        $scope.deleteTodo = function(id) {
+            $http({
+                    method: "DELETE",
+                    url: "api/todo/" + id,
+                })
+                .then(function(response) {
+                    $scope.getTodos();
+                }, function(response) {
+                    $scope.errorText =
+                        "Failed to delete item. Server returned " + response.status + " - " + response.statusText;
+                });
+        };
 
-    todoListPlaceholder.style.display = "block";
+        $scope.updateTodo = function(todo) {
+            $http({
+                    method: "PUT",
+                    url: "api/todo/" + todo.id,
+                    data: todo,
+                })
+                .then(function(response) {
+                    $scope.getTodos();
+                }, function(response) {
+                    $scope.errorText =
+                        "Failed to update item. Server returned " + response.status + " - " + response.statusText;
+                });
+        };
 
-    makeRequest("api/todo/", "GET", null, "Failed to get list.")
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(todos) {
-            var totalNumberOfCompletedTodos = todos.filter(function(todo) {
+        $scope.numberOfCompletedTodos = function() {
+            return $scope.todos.filter(function(todo) {
                 return todo.isComplete;
             }).length;
-
-            if (totalNumberOfCompletedTodos > 0) {
-                deleteCompletedTodoBtn.style.display = "block";
-            } else {
-                deleteCompletedTodoBtn.style.display = "none";
-            }
-            completeCounter.textContent = "" + totalNumberOfCompletedTodos + "/" + todos.length + " complete";
-            todoListPlaceholder.style.display = "none";
-            todos.forEach(function(todo) {
-                newList.appendChild(generateTodoListElement(todo));
-            });
-        });
-
-    todoList.parentNode.replaceChild(newList, todoList);
-}
-
-function generateTodoListElement(todo) {
-    var listItem = document.createElement("li");
-    listItem.className = "todo-item";
-    listItem.id = "todo-item" + todo.id;
-    var todoText = document.createElement("p");
-    todoText.className = "todo-text";
-    todoText.id = "todo-text" + todo.id;
-    todoText.textContent = todo.title;
-    listItem.appendChild(todoText);
-
-    var delBtn = makeButton(todo.id, "del", "Delete");
-    delBtn.onclick = function() {
-        makeRequest("api/todo/" + todo.id, "DELETE", null, "Failed to delete item.")
-            .then(reloadTodoList);
-    };
-
-    var completedBtn = makeButton(todo.id, "completed", "Done");
-    completedBtn.onclick = function() {
-        var dataToSend = JSON.stringify({
-            title: todoText.textContent,
-            completeState: !todo.isComplete
-        });
-        makeRequest("api/todo/" + todo.id, "PUT", dataToSend, "Failed to update item.")
-            .then(reloadTodoList);
-    };
-
-    var updBtn = makeButton(todo.id, "upd", "Update");
-    updBtn.onclick = function() {
-        //create input field for updating the todo
-        var updForm = document.createElement("form");
-        var updInput = document.createElement("input");
-        updInput.id = "upd-input" + todo.id;
-        updInput.setAttribute("type", "text");
-        var updConfirmButton = document.createElement("input");
-        updConfirmButton.id = "upd-confirm" + todo.id;
-        updConfirmButton.classList.add("button");
-        updConfirmButton.setAttribute("type", "submit");
-        updConfirmButton.setAttribute("value", "Confirm");
-        updForm.appendChild(updInput);
-        updForm.appendChild(updConfirmButton);
-        updInput.setAttribute("value", todo.title);
-        todoText.parentNode.replaceChild(updForm, todoText);
-        updForm.onsubmit = function() {
-            var dataToSend = JSON.stringify({
-                title: updInput.value,
-                completeState: todo.isComplete
-            });
-            makeRequest("api/todo/" + todo.id, "PUT", dataToSend, "Failed to update item.")
-                .then(reloadTodoList);
         };
-    };
 
-    if (todo.isComplete) {
-        listItem.classList.add("todo-item-complete");
-        todoText.classList.add("todo-text-complete");
-    }
+        $scope.deleteAllCompletedTodos = function() {
+            $scope.todos.forEach(function(todo) {
+                if (todo.isComplete) {
+                    $scope.deleteTodo(todo.id);
+                }
+            });
+        };
 
-    listItem.appendChild(completedBtn);
-    listItem.appendChild(updBtn);
-    listItem.appendChild(delBtn);
-    return listItem;
-}
-
-function makeButton(id, tag, label) {
-    var newButton = document.createElement("button");
-    newButton.className = tag + "-btn button";
-    newButton.id = tag + "-btn" + id;
-    newButton.innerHTML = label;
-    return newButton;
-}
-
-function filterTodos(filter) {
-    var todoListItems = document.getElementsByClassName("todo-item");
-    var i = 0;
-    switch (filter) {
-        //displays both complete and uncomplete todos
-        case "all":
-            for (i = 0; i < todoListItems.length; i++) {
-                todoListItems[i].style.display = "list-item";
+        $scope.filterTodos = function(filter) {
+            switch (filter) {
+                //displays both complete and uncomplete todos
+                case "all":
+                    $scope.todos.forEach(function(todo) {
+                        todo.filtered = false;
+                    });
+                    break;
+                //only displays the active (uncompleted) todos
+                case "active":
+                    $scope.todos.forEach(function(todo) {
+                        todo.filtered = todo.isComplete ? true : false;
+                    });
+                    break;
+                //only displays the completed todos
+                case "complete":
+                    $scope.todos.forEach(function(todo) {
+                        todo.filtered = todo.isComplete ? false : true;
+                    });
+                    break;
             }
-            break;
-            //only displays the active (uncompleted) todos
-        case "active":
-            for (i = 0; i < todoListItems.length; i++) {
-                todoListItems[i].style.display =
-                    todoListItems[i].classList.contains("todo-item-complete") ? "none" : "list-item";
-            }
-            break;
-            //only displays the completed todos
-        case "complete":
-            for (i = 0; i < todoListItems.length; i++) {
-                todoListItems[i].style.display =
-                    todoListItems[i].classList.contains("todo-item-complete") ? "list-item" : "none";
-            }
-            break;
-    }
-}
-reloadTodoList();
-var timerId = setInterval(reloadTodoList, 30000);
+        };
+
+        angular.element(document).ready(function() {
+            $scope.getTodos();
+        });
+    }]);

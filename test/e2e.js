@@ -145,14 +145,14 @@ testing.describe("end to end", function() {
             helpers.addTodo("3rd todo");
             helpers.toggleTodoComplete(1);
             helpers.filterTodos("all");
-            helpers.getTodoItemStyle(0).then(function(output) {
-                expect(output).to.contain("display: list-item");
+            helpers.getTodoItemClass(0).then(function(output) {
+                expect(output).to.not.contain("ng-hide");
             });
-            helpers.getTodoItemStyle(1).then(function(output) {
-                expect(output).to.contain("display: list-item");
+            helpers.getTodoItemClass(1).then(function(output) {
+                expect(output).to.not.contain("ng-hide");
             });
-            helpers.getTodoItemStyle(2).then(function(output) {
-                expect(output).to.contain("display: list-item");
+            helpers.getTodoItemClass(2).then(function(output) {
+                expect(output).to.not.contain("ng-hide");
             });
         });
         testing.it("should show only completed todos after clicking completed", function() {
@@ -162,15 +162,16 @@ testing.describe("end to end", function() {
             helpers.addTodo("3rd todo");
             helpers.toggleTodoComplete(1);
             helpers.filterTodos("completed");
-            helpers.getTodoItemStyle(0).then(function(output) {
-                expect(output).to.contain("display: none");
+            helpers.getTodoItemClass(0).then(function(output) {
+                expect(output).to.contain("ng-hide");
             });
-            helpers.getTodoItemStyle(1).then(function(output) {
-                expect(output).to.contain("display: list-item");
+            helpers.getTodoItemClass(1).then(function(output) {
+                expect(output).to.not.contain("ng-hide");
             });
-            helpers.getTodoItemStyle(2).then(function(output) {
-                expect(output).to.contain("display: none");
+            helpers.getTodoItemClass(2).then(function(output) {
+                expect(output).to.contain("ng-hide");
             });
+
         });
         testing.it("should show only active todos after clicking active", function() {
             helpers.navigateToSite();
@@ -179,14 +180,14 @@ testing.describe("end to end", function() {
             helpers.addTodo("3rd todo");
             helpers.toggleTodoComplete(1);
             helpers.filterTodos("active");
-            helpers.getTodoItemStyle(0).then(function(output) {
-                expect(output).to.contain("display: list-item");
+            helpers.getTodoItemClass(0).then(function(output) {
+                expect(output).to.not.contain("ng-hide");
             });
-            helpers.getTodoItemStyle(1).then(function(output) {
-                expect(output).to.contain("display: none");
+            helpers.getTodoItemClass(1).then(function(output) {
+                expect(output).to.contain("ng-hide");
             });
-            helpers.getTodoItemStyle(2).then(function(output) {
-                expect(output).to.contain("display: list-item");
+            helpers.getTodoItemClass(2).then(function(output) {
+                expect(output).to.not.contain("ng-hide");
             });
         });
     });
