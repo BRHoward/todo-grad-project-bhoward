@@ -92,7 +92,7 @@ testing.describe("end to end", function() {
             helpers.addTodo("new todo item");
             helpers.toggleTodoComplete(0);
             helpers.getTodoTextClass(0).then(function(classname) {
-                expect(classname).include("todo-complete");
+                expect(classname).include("todo-text-complete");
             });
         });
         testing.it("takes complete class off when toggled twice", function() {
@@ -101,7 +101,7 @@ testing.describe("end to end", function() {
             helpers.toggleTodoComplete(0);
             helpers.toggleTodoComplete(0);
             helpers.getTodoTextClass(0).then(function(classname) {
-                expect(classname).not.include("todo-complete");
+                expect(classname).not.include("todo-text-complete");
             });
         });
         testing.it("updates the complete counter", function() {
@@ -134,6 +134,59 @@ testing.describe("end to end", function() {
             helpers.deleteCompletedTodos();
             helpers.getTodoList().then(function(elements) {
                 assert.equal(elements.length, 2);
+            });
+        });
+    });
+    testing.describe("when filtering todos", function() {
+        testing.it("should show all after clicking all", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("1st todo");
+            helpers.addTodo("2nd todo");
+            helpers.addTodo("3rd todo");
+            helpers.toggleTodoComplete(1);
+            helpers.filterTodos("all");
+            helpers.getTodoItemStyle(0).then(function(output) {
+                expect(output).to.contain("display: list-item");
+            });
+            helpers.getTodoItemStyle(1).then(function(output) {
+                expect(output).to.contain("display: list-item");
+            });
+            helpers.getTodoItemStyle(2).then(function(output) {
+                expect(output).to.contain("display: list-item");
+            });
+        });
+        testing.it("should show only completed todos after clicking completed", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("1st todo");
+            helpers.addTodo("2nd todo");
+            helpers.addTodo("3rd todo");
+            helpers.toggleTodoComplete(1);
+            helpers.filterTodos("completed");
+            helpers.getTodoItemStyle(0).then(function(output) {
+                expect(output).to.contain("display: none");
+            });
+            helpers.getTodoItemStyle(1).then(function(output) {
+                expect(output).to.contain("display: list-item");
+            });
+            helpers.getTodoItemStyle(2).then(function(output) {
+                expect(output).to.contain("display: none");
+            });
+        });
+        testing.it("should show only active todos after clicking active", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("1st todo");
+            helpers.addTodo("2nd todo");
+            helpers.addTodo("3rd todo");
+            helpers.toggleTodoComplete(1);
+            helpers.filterTodos("active");
+            helpers.getTodoItemStyle(0).then(function(output) {
+                expect(output).to.contain("display: list-item");
+            });
+            helpers.getTodoItemStyle(1).then(function(output) {
+                expect(output).to.contain("display: none");
+            });
+            helpers.getTodoItemStyle(2).then(function(output) {
+                expect(output).to.contain("display: list-item");
             });
         });
     });
