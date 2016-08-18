@@ -28,11 +28,11 @@ deleteCompletedTodoBtn.onclick = function() {
         .then(function(todos) {
             todos.forEach(function(todo) {
                 if (todo.isComplete) {
-                    makeRequest("api/todo/" + todo.id, "DELETE", null, "Failed to delete item.")
-                        .then(reloadTodoList);
+                    makeRequest("api/todo/" + todo.id, "DELETE", null, "Failed to delete item.");
                 }
             });
-        });
+        })
+        .then(reloadTodoList);
 };
 
 filterButtonAll.onclick = function() {
@@ -49,7 +49,6 @@ function makeRequest(url, method, body, errorText) {
     return fetch(url, {
             method: method,
             headers: {
-                //"Accept": "application/json",
                 "Content-Type": "application/json"
             },
             body: body
