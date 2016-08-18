@@ -107,4 +107,6 @@ angular.module("todoList", [])
         angular.element(document).ready(function() {
             $scope.getTodos();
         });
+        var pollTimer = setInterval($scope.getTodos, 30000);
+
     }]);
