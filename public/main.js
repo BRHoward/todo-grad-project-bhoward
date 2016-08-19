@@ -1,6 +1,6 @@
-/*global angular*/
+/*global angular, _*/
 
-angular.module("todoList", [])
+angular.module("todoList", ["ngAnimate"])
     .controller("TodoListController", ["$scope", "$http", function($scope, $http) {
 
         $scope.todos = [];
@@ -15,7 +15,8 @@ angular.module("todoList", [])
                     url: "api/todo/"
                 })
                 .then(function(response) {
-                    $scope.todos = response.data;
+                    var newList = response.data;
+                    $scope.updateTodoList(newList);
                     $scope.todosLoaded = true;
                 }, function(response) {
                     $scope.errorText =
@@ -100,6 +101,48 @@ angular.module("todoList", [])
                     $scope.todos.forEach(function(todo) {
                         todo.filtered = todo.isComplete ? false : true;
                     });
+                    break;
+            }
+        };
+
+        /*
+            Rather than replace the whole local list with the fetched list we
+            find the differences in the lists and updated the local list accordingly.
+            This removes flicker on reloads and allows use of angular animations.
+        */
+        $scope.updateTodoList = function(newList) {
+            var type = "";
+            if ($scope.todos.length > newList.length) {
+                type = "deletion";
+            } else if ($scope.todos.length < newList.length) {
+                type = "addition";
+            } else if ($scope.todos.length === newList.length) {
+                type = "update";
+            }
+            var i = 0;
+            switch (type) {
+                case "deletion":
+                    for (i = 0; i < $scope.todos.length; i++) {
+                        if (!newList[i] || $scope.todos[i].id !== newList[i].id) {
+                            $scope.todos.splice(i, 1);
+                            i--;
+                        }
+                    }
+                    break;
+                case "addition":
+                    for (i = 0; i < newList.length; i++) {
+                        if (!$scope.todos[i] || $scope.todos[i].id !== newList[i].id) {
+                            $scope.todos.splice(i, 0, newList[i]);
+                            i--;
+                        }
+                    }
+                    break;
+                case "update":
+                    for (i = 0; i < $scope.todos.length; i++) {
+                        if (!_.isMatch($scope.todos[i], newList[i])) {
+                            $scope.todos.splice(i, 1, newList[i]);
+                        }
+                    }
                     break;
             }
         };

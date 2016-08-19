@@ -95,6 +95,11 @@ module.exports.removeTodo = function(id) {
     driver.findElement(webdriver.By.id("del-btn" + id)).then(function(button) {
         button.click();
     });
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("del-btn" + id)).then(function(output) {
+            return output === false;
+        });
+    }, 1000);
 };
 
 module.exports.updateTodo = function(id, newText) {
@@ -122,7 +127,7 @@ module.exports.toggleTodoComplete = function(id) {
     driver.wait(function() {
         return driver.isElementPresent(webdriver.By.id("completed-btn" + id));
     }, 1000);
-
+    driver.sleep(500);
     driver.findElement(webdriver.By.id("completed-btn" + id)).click();
 };
 
@@ -130,8 +135,8 @@ module.exports.deleteCompletedTodos = function() {
     driver.wait(function() {
         return driver.isElementPresent(webdriver.By.id("delete-complete-btn"));
     }, 1000);
-
     driver.findElement(webdriver.By.id("delete-complete-btn")).click();
+    driver.sleep(500);
 };
 
 module.exports.getTodoTextClass = function(id) {
