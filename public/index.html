@@ -19,7 +19,6 @@
             <button class="button" id="filter-button-all" ng-click="filterTodos('all')">Show all</button>
             <button class="button" id="filter-button-active" ng-click="filterTodos('active')">Show active</button>
             <button class="button" id="filter-button-completed" ng-click="filterTodos('complete')">Show completed</button>
-            <h2 id="todo-list-placeholder" ng-hide="todosLoaded">Loading...</h2>
             <ul id="todo-list">
                 <li ng-attr-id="{{ 'todo-item' + todo.id }}" ng-repeat="todo in todos" ng-hide="todo.filtered" ng-class="{'todo-item-complete': todo.isComplete}">
                     <p ng-attr-id="{{ 'todo-text' + todo.id }}" ng-hide="todo.beingUpdated" ng-class="{'todo-text-complete': todo.isComplete}">{{todo.title}}</p>
@@ -36,6 +35,7 @@
                 <input id="new-todo" placeholder="What needs to be done?" ng-model="inputBoxText" autofocus>
                 <input id="submit-todo" class="button" type="submit" value="Create">
             </form>
+            <h2 id="todo-list-placeholder" ng-hide="todosLoaded">Loading...</h2>
             <div id="error">{{errorText}}</div>
         </section>
     </body>
