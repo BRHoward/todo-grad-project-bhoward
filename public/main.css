@@ -77,14 +77,13 @@ input
 
 .todo-item.ng-leave {
   transition:0.1s linear all;
+  max-height: 80px;
   opacity:1;
   left:0px;
-  z-index: -100;
 }
 
 .todo-item.ng-leave.ng-leave-active {
-  left:-200px;
+  max-height:0px;
+  left:200px;
   opacity:0;
-  z-index:-100;
 }
-
