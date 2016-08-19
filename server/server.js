@@ -50,7 +50,6 @@ module.exports = function(port, middleware, callback) {
         }
     });
 
-    //changing this
     app.put("/api/todo/:id", function(req, res) {
         var id = req.params.id;
         todos.forEach(function(todo, index) {
