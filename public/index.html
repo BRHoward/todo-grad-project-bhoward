@@ -1,30 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ng-app="todoListApp">
     <head>
         <meta charset="utf-8">
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.js"></script>
+        <script type="text/javascript" src="todoListApp.js"></script>
+        <script type="text/javascript" src="todoListController.js"></script>
+        <script type="text/javascript" src="todoListService.js"></script>
         <title>TODO List</title>
         <link href="main.css" rel="stylesheet" type="text/css">
         <link rel="icon" type="image/ico" href="favicon.ico">
     </head>
-    <body>
+    <body ng-controller="TodoListController">
         <header>
-            <h1>TODO List</h1>
+            <h1>TODO List<span id="todo-list-placeholder" ng-hide="todosLoaded"> - Loading...</span></h1>
         </header>
         <section>
-            <div id="count-label"></div>
-            <button id="delete-complete-btn" class="button">Delete completed</button>
+            <div id="count-label">{{numberOfCompletedTodos()}}/{{todos.length}} complete</div>
             <br>
-            <button class="button" id="filter-button-all">Show all</button>
-            <button class="button" id="filter-button-active">Show active</button>
-            <button class="button" id="filter-button-completed">Show completed</button>
-            <h2 id="todo-list-placeholder">Loading...</h2>
-            <ul id="todo-list"></ul>
-            <form id="todo-form">
-                <input id="new-todo" placeholder="What needs to be done?" autofocus>
-                <input id="submit-todo" class="button" type="submit" value="Create">
+            <button class="button" id="filter-button-all" ng-click="filterTodos('all')">Show all</button>
+            <button class="button" id="filter-button-active" ng-click="filterTodos('active')">Show active</button>
+            <button class="button" id="filter-button-completed" ng-click="filterTodos('complete')">Show completed</button>
+            <form name="newTodoForm" id="todo-form" ng-submit="addTodo()" novalidate>
+                <input name="new-todo-input" id="new-todo" placeholder="What needs to be done?" ng-model="inputBoxText" autocomplete="off" autofocus required>
+                <input id="submit-todo" class="button" ng-disabled="newTodoForm.$invalid" type="submit" value="Create">
             </form>
-            <div id="error"></div>
+            <ul id="todo-list">
+                <li class="todo-item" ng-attr-id="{{ 'todo-item' + todo.id }}" ng-repeat="todo in todos" ng-hide="todo.filtered" ng-class="{'todo-item-complete': todo.isComplete}">
+                    <p ng-attr-id="{{ 'todo-text' + todo.id }}" ng-hide="todo.beingUpdated" ng-class="{'todo-text-complete': todo.isComplete}">{{todo.title}}</p>
+                    <form ng-show="todo.beingUpdated" ng-submit="updateTodo(todo); todo.beingUpdated=false">
+                        <input ng-attr-id="{{ 'upd-input' + todo.id }}" type="text" ng-model="todo.title"></input>
+                        <input class=button ng-attr-id="{{ 'upd-confirm' + todo.id }}" type="submit" value="Confirm"></input>
+                    </form>
+                    <button class = "button completed-btn" ng-attr-id="{{ 'completed-btn' + todo.id }}" ng-click="todo.isComplete=!todo.isComplete; updateTodo(todo)">Done</button>
+                    <button class = "button upd-btn" ng-attr-id="{{ 'upd-btn' + todo.id }}" ng-disabled="todo.beingUpdated" ng-click="todo.beingUpdated=true">Update</button>
+                    <button class = "button del-btn" ng-attr-id="{{ 'del-btn' + todo.id }}" ng-click="deleteTodo(todo.id)">Remove</button>
+                </li>
+            </ul>
+            <button id="delete-complete-btn" class="button" ng-show="numberOfCompletedTodos()>0" ng-click="deleteAllCompletedTodos()">Remove all completed</button>
+            <div id="error">{{errorText}}</div>
         </section>
-        <script type="text/javascript" src="main.js"></script>
     </body>
 </html>

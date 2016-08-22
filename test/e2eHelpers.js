@@ -23,9 +23,9 @@ module.exports.setupDriver = function() {
 module.exports.setupServer = function(done) {
     router = express.Router();
     if (gatheringCoverage) {
-        router.get("/main.js", function(req, res) {
-            var absPath = path.join(__dirname, "..", "public", "main.js");
-            res.send(instrumenter.instrumentSync(fs.readFileSync("public/main.js", "utf8"), absPath));
+        router.get("/todoListApp.js", function(req, res) {
+            var absPath = path.join(__dirname, "..", "public", "todoListApp.js");
+            res.send(instrumenter.instrumentSync(fs.readFileSync("public/todoListApp.js", "utf8"), absPath));
         });
     }
     server = createServer(testPort, router, done);
@@ -75,6 +75,9 @@ module.exports.getTodoList = function() {
 };
 
 module.exports.getTodoText = function(id) {
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("todo-text" + id));
+    }, 1000);
     var textElement = driver.findElement(webdriver.By.id("todo-text" + id));
     return textElement.getText();
 };
@@ -92,6 +95,11 @@ module.exports.removeTodo = function(id) {
     driver.findElement(webdriver.By.id("del-btn" + id)).then(function(button) {
         button.click();
     });
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("del-btn" + id)).then(function(output) {
+            return output === false;
+        });
+    }, 1000);
 };
 
 module.exports.updateTodo = function(id, newText) {
@@ -107,6 +115,9 @@ module.exports.updateTodo = function(id, newText) {
     driver.findElement(webdriver.By.id("upd-input" + id)).then(function(inputField) {
         inputField.sendKeys(newText);
     });
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("upd-confirm" + id));
+    }, 1000);
     driver.findElement(webdriver.By.id("upd-confirm" + id)).then(function(button) {
         button.click();
     });
@@ -116,7 +127,7 @@ module.exports.toggleTodoComplete = function(id) {
     driver.wait(function() {
         return driver.isElementPresent(webdriver.By.id("completed-btn" + id));
     }, 1000);
-
+    driver.sleep(500);
     driver.findElement(webdriver.By.id("completed-btn" + id)).click();
 };
 
@@ -124,8 +135,8 @@ module.exports.deleteCompletedTodos = function() {
     driver.wait(function() {
         return driver.isElementPresent(webdriver.By.id("delete-complete-btn"));
     }, 1000);
-
     driver.findElement(webdriver.By.id("delete-complete-btn")).click();
+    driver.sleep(500);
 };
 
 module.exports.getTodoTextClass = function(id) {
@@ -150,12 +161,12 @@ module.exports.filterTodos = function(filter) {
     driver.findElement(webdriver.By.id("filter-button-" + filter)).click();
 };
 
-module.exports.getTodoItemStyle = function(id) {
+module.exports.getTodoItemClass = function(id) {
     driver.wait(function() {
         return driver.isElementPresent(webdriver.By.id("todo-item" + id));
     }, 1000);
 
-    return driver.findElement(webdriver.By.id("todo-item" + id)).getAttribute("style");
+    return driver.findElement(webdriver.By.id("todo-item" + id)).getAttribute("class");
 };
 
 module.exports.setupErrorRoute = function(action, route) {

@@ -71,7 +71,8 @@ describe("server", function() {
                     assert.deepEqual(JSON.parse(body), [{
                         title: "This is a TODO item",
                         isComplete : false,
-                        done: false,
+                        beingUpdated : false,
+                        filtered : false,
                         id: "0"
                     }]);
                     done();
