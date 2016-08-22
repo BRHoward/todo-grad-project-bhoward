@@ -2,7 +2,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var _ = require("underscore");
 
-module.exports = function(port, middleware, callback) {
+module.exports = function (port, middleware, callback) {
     var app = express();
 
     if (middleware) {
@@ -23,7 +23,7 @@ module.exports = function(port, middleware, callback) {
     }
 
     // Create
-    app.post("/api/todo", function(req, res) {
+    app.post("/api/todo", function (req, res) {
         var newTodo = new todo(latestId.toString(), req.body.title);
         latestId++;
         todos.push(newTodo);
@@ -32,16 +32,16 @@ module.exports = function(port, middleware, callback) {
     });
 
     // Read
-    app.get("/api/todo", function(req, res) {
+    app.get("/api/todo", function (req, res) {
         res.json(todos);
     });
 
     // Delete
-    app.delete("/api/todo/:id", function(req, res) {
+    app.delete("/api/todo/:id", function (req, res) {
         var id = req.params.id;
         var todo = getTodo(id);
         if (todo) {
-            todos = todos.filter(function(otherTodo) {
+            todos = todos.filter(function (otherTodo) {
                 return otherTodo !== todo;
             });
             res.sendStatus(200);
@@ -50,9 +50,9 @@ module.exports = function(port, middleware, callback) {
         }
     });
 
-    app.put("/api/todo/:id", function(req, res) {
+    app.put("/api/todo/:id", function (req, res) {
         var id = req.params.id;
-        todos.forEach(function(todo, index) {
+        todos.forEach(function (todo, index) {
             if (todo.id === id) {
                 todos[index] = req.body;
             }
@@ -65,7 +65,7 @@ module.exports = function(port, middleware, callback) {
     });
 
     function getTodo(id) {
-        return _.find(todos, function(todo) {
+        return _.find(todos, function (todo) {
             return todo.id === id;
         });
     }
@@ -74,13 +74,13 @@ module.exports = function(port, middleware, callback) {
 
     // We manually manage the connections to ensure that they're closed when calling close().
     var connections = [];
-    server.on("connection", function(connection) {
+    server.on("connection", function (connection) {
         connections.push(connection);
     });
 
     return {
-        close: function(callback) {
-            connections.forEach(function(connection) {
+        close: function (callback) {
+            connections.forEach(function (connection) {
                 connection.destroy();
             });
             server.close(callback);
